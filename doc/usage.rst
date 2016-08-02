@@ -99,9 +99,9 @@ few command line options:
    pass multiple packages for pre-install.
 
 .. cmdoption:: --upgrade-pip <package>
-
-   Force upgrading pip to the latest available release. *Note:* This
-   can produce non-repeatable builds.
+   .. versionadded:: 1.0
+      Force upgrading pip to the latest available release. *Note:* This
+      can produce non-repeatable builds.
 
 .. cmdoption:: --index-url <URL>
 
@@ -141,12 +141,6 @@ few command line options:
 
    Use setuptools instead of distribute in the virtualenv
 
-.. cmdoption:: --no-test
-
-   Skip running ``python setup.py test`` after dependencies and the
-   package is installed. This is useful if the Python code is packaged
-   using distutils and not setuptools.
-
 .. cmdoption:: --python <path>
 
    Use a specific Python interpreter found in ``path`` as the
@@ -185,8 +179,13 @@ few command line options:
 
 .. cmdoption:: --pypi-url <URL>
 
-   .. deprecated:: 0.12
+   .. deprecated:: 1.0
       Use :option:`--index-url` instead.
+
+.. cmdoption:: --no-test
+
+   .. deprecated:: 1.0
+      This option has no effect. See :option:`--setuptools-test`.
 
 
 Advanced usage
