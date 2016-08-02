@@ -31,8 +31,8 @@ from dh_virtualenv import Deployment
 from dh_virtualenv.cmdline import get_default_parser
 
 
-PY_CMD = os.path.abspath('debian/test/usr/share/python/test/bin/python')
-PIP_CMD = os.path.abspath('debian/test/usr/share/python/test/bin/pip')
+PY_CMD = os.path.abspath('debian/test/opt/venvs/test/bin/python')
+PIP_CMD = os.path.abspath('debian/test/opt/venvs/test/bin/pip')
 
 
 class FakeTemporaryFile(object):
@@ -75,7 +75,7 @@ def override_envvar(name, value):
 def test_shebangs_fix():
     """Generate a test for each possible interpreter"""
     for interpreter in ('python', 'pypy', 'ipy', 'jython'):
-        yield check_shebangs_fix, interpreter, '/usr/share/python/test'
+        yield check_shebangs_fix, interpreter, '/opt/venvs/test'
 
 
 def test_shebangs_fix_overridden_root():
@@ -188,9 +188,9 @@ def test_install_dependencies_with_preinstall_with_requirements(callmock):
 def test_create_venv(callmock):
     d = Deployment('test')
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -202,10 +202,10 @@ def test_create_venv(callmock):
 def test_create_venv_with_verbose(callmock):
     d = Deployment('test', verbose=True)
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
                                  '--verbose',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          '-v',
@@ -218,9 +218,9 @@ def test_create_venv_with_verbose(callmock):
 def test_create_venv_with_extra_urls(callmock):
     d = Deployment('test', extra_urls=['foo', 'bar'])
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install', '--extra-index-url=foo',
@@ -233,10 +233,10 @@ def test_create_venv_with_extra_urls(callmock):
 def test_create_venv_with_extra_virtualenv(callmock):
     d = Deployment('test', extra_virtualenv_arg=["--never-download"])
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
                                  '--never-download',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
 
 
 @patch('tempfile.NamedTemporaryFile', FakeTemporaryFile)
@@ -245,9 +245,9 @@ def test_create_venv_with_custom_index_url(callmock):
     d = Deployment('test', extra_urls=['foo', 'bar'],
                    index_url='http://example.com/simple')
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -263,9 +263,9 @@ def test_create_venv_with_extra_pip_arg(callmock):
     d = Deployment('test', extra_pip_arg=['--no-compile'])
     d.create_virtualenv()
     d.install_dependencies()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -278,10 +278,10 @@ def test_create_venv_with_extra_pip_arg(callmock):
 def test_create_venv_with_setuptools(callmock):
     d = Deployment('test', setuptools=True)
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
                                  '--setuptools',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -293,9 +293,9 @@ def test_create_venv_with_setuptools(callmock):
 def test_create_venv_with_system_packages(callmock):
     d = Deployment('test', use_system_packages=True)
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--system-site-packages',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -307,10 +307,10 @@ def test_create_venv_with_system_packages(callmock):
 def test_venv_with_custom_python(callmock):
     d = Deployment('test', python='/tmp/python')
     d.create_virtualenv()
-    eq_('debian/test/usr/share/python/test', d.package_dir)
+    eq_('debian/test/opt/venvs/test', d.package_dir)
     callmock.assert_called_with(['virtualenv', '--no-site-packages',
                                  '--python', '/tmp/python',
-                                 'debian/test/usr/share/python/test'])
+                                 'debian/test/opt/venvs/test'])
     eq_([PY_CMD,
          PIP_CMD,
          'install',
@@ -345,7 +345,7 @@ def test_fix_activate_path():
     expected = textwrap.dedent("""
         other things
 
-        VIRTUAL_ENV="/usr/share/python/test"
+        VIRTUAL_ENV="/opt/venvs/test"
 
         more other things
     """)
