@@ -219,17 +219,23 @@ class Deployment(object):
                 "activate.fish"
             ],
         ]
+        found = 0
 
         for activate_args in activate_settings:
             virtualenv_path = activate_args[0]
             pattern = re.compile(activate_args[1], flags=re.M)
-            activate_file = activate_args[2]
+            activate_file = self.venv_bin(activate_args[2])
 
-            with open(self.venv_bin(activate_file), 'r+') as fh:
-                content = pattern.sub(virtualenv_path, fh.read())
-                fh.seek(0)
-                fh.truncate()
-                fh.write(content)
+            if os.path.exists(activate_file):
+		found += 1
+                with open(activate_file, 'r+') as fh:
+                    content = pattern.sub(virtualenv_path, fh.read())
+                    fh.seek(0)
+                    fh.truncate()
+                    fh.write(content)
+
+        if found == 0:
+            raise Exception("none of the 'bin/activate.*' files could be found.")
 
     def install_package(self):
         if not self.skip_install:
